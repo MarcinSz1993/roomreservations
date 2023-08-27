@@ -1,15 +1,33 @@
 package com.example.roomreservations.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity(name = "reservation")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "price")
+    private double price;
+    @Column(name = "payment_method")
+    private String paymentMethod;
+    @Column(name = "payment_status")
+    private String paymentStatus;
+    @Column(name = "start_reservation")
+    private LocalDateTime startReseravtion;
+    @Column(name = "end_reservation")
+    private LocalDateTime endReservation;
 
 }
