@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "reservation")
 @Getter
@@ -29,5 +30,6 @@ public class Reservation {
     private LocalDateTime startReseravtion;
     @Column(name = "end_reservation")
     private LocalDateTime endReservation;
+
 
 }

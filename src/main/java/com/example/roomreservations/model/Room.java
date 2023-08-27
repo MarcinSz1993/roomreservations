@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity(name = "room")
 @Getter
 @Setter
@@ -24,4 +26,6 @@ public class Room {
     private int capacity;
     @Column(name = "Available")
     private boolean isAvailable;
+
+
 }

@@ -27,4 +27,7 @@ public class Guest {
     private String email;
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
+
+
 }
