@@ -31,5 +31,8 @@ public class Reservation {
     @Column(name = "end_reservation")
     private LocalDateTime endReservation;
 
+    @ManyToOne
+    @JoinColumn (name = "guest_id")
+    private Guest guest;
 
 }
