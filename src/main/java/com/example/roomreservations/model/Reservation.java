@@ -1,5 +1,6 @@
 package com.example.roomreservations.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,5 +35,12 @@ public class Reservation {
     @ManyToOne
     @JoinColumn (name = "guest_id")
     private Guest guest;
+
+
+    @ManyToOne
+    @JoinColumn (name = "room_id")
+    private Room room;
+
+
 
 }

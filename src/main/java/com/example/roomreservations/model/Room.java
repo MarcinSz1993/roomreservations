@@ -1,5 +1,6 @@
 package com.example.roomreservations.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,11 @@ public class Room {
     private int capacity;
     @Column(name = "Available")
     private boolean isAvailable;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
 
 
 }
