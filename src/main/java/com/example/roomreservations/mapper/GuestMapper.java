@@ -1,38 +1,28 @@
-package com.example.roomreservations.service;
+package com.example.roomreservations.mapper;
 
 import com.example.roomreservations.dto.GuestDto;
 import com.example.roomreservations.dto.ReservationDto;
-import com.example.roomreservations.mapper.ReservationMapper;
 import com.example.roomreservations.model.Guest;
 import com.example.roomreservations.model.Reservation;
-import com.example.roomreservations.repository.GuestRepository;
-import com.example.roomreservations.repository.ReservationRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-public class GuestService {
-    private final GuestRepository guestRepository;
-    private final ReservationMapper reservationMapper;
-
-    public Guest registerGuest(Guest guest) {
-       return guestRepository.save(guest);
-    }
-
-    public GuestDto findBySurname(String surname){
-        Guest guest = guestRepository.findBySurname(surname);
-
+public class GuestMapper {
+    public GuestDto guestToGuestDto (Guest guest) {
         List<ReservationDto> reservationDtos = guest.getReservations().stream()
                 .map(new Function<Reservation, ReservationDto>() {
+
                     @Override
                     public ReservationDto apply(Reservation reservation) {
-                        return reservationMapper.reservationToReservationDto(reservation);
+                        return new ReservationDto(
+                                reservation.getId(),
+                                reservation.getPrice(),
+                                reservation.getPaymentMethod(),
+                                reservation.getPaymentStatus(),
+                                reservation.getStartReseravtion(),
+                                reservation.getEndReservation());
+
                     }
                 })
                 .toList();
@@ -44,10 +34,7 @@ public class GuestService {
                 guest.getEmail(),
                 guest.getPhoneNumber(),
                 reservationDtos
+
         );
-
-
     }
-
-
 }

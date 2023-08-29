@@ -3,10 +3,9 @@ package com.example.roomreservations.controller;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,5 +16,9 @@ public class RoomController {
     @PostMapping("/new")
     public Room addRoom(@RequestBody Room room){
         return roomService.addRoom(room);
+    }
+    @GetMapping("/available")
+    public List<Room> showAvailableRooms(){
+        return roomService.showAvailableRooms();
     }
 }
