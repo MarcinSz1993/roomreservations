@@ -56,11 +56,11 @@ public class ReservationService {
     }
 
     public boolean isRoomAvailable(Room room, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Reservation> conflictingReservations = reservationRepository
+        List<Reservation> incorrectReservation = reservationRepository
                 .findByRoomAndStartReservationLessThanEqualAndEndReservationGreaterThanEqual(
                         room, endDate, startDate);
 
-        return conflictingReservations.isEmpty();
+        return incorrectReservation.isEmpty();
     }
 
 }
