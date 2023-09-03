@@ -28,19 +28,18 @@ public class Reservation {
     @Column(name = "payment_status")
     private String paymentStatus;
     @Column(name = "start_reservation")
-    private LocalDateTime startReseravtion;
+    private LocalDateTime startReservation;
     @Column(name = "end_reservation")
     private LocalDateTime endReservation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn (name = "guest_id")
+
     private Guest guest;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn (name = "room_id")
     private Room room;
-
-
 
 }

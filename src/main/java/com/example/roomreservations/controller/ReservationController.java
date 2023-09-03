@@ -3,9 +3,7 @@ package com.example.roomreservations.controller;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.service.ReservationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,5 +17,10 @@ public class ReservationController {
     @GetMapping("/all")
     public List<Reservation> showAllReservations(){
         return reservationService.showAllReservations();
+    }
+
+    @PostMapping("/new")
+    public Reservation createNewReservation(@RequestBody Reservation reservation){
+        return reservationService.createNewReservation(reservation);
     }
 }

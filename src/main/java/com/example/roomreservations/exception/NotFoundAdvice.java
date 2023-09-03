@@ -14,5 +14,17 @@ public class NotFoundAdvice {
 public String GuestNotFoundHandler(GuestNotFoundException ex){
     return ex.getMessage();
 }
+@ResponseBody
+@ExceptionHandler(DatesNotAvailableException.class)
+@ResponseStatus(HttpStatus.CONFLICT)
+public String DatesNotAvailableHandler(DatesNotAvailableException ex){
+    return ex.getMessage();
+}
+@ResponseBody
+@ExceptionHandler
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public String WrongDatesHandler(WrongDatesException ex){
+    return ex.getMessage();
+}
 
 }

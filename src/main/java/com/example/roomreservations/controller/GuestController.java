@@ -22,6 +22,7 @@ public class GuestController {
 
     @GetMapping("/surname")
     public GuestDto findBySurname(@RequestParam String surname) {
+
         return guestService.findBySurname(surname);
     }
 }

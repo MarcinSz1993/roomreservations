@@ -2,6 +2,7 @@ package com.example.roomreservations.service;
 
 import com.example.roomreservations.dto.GuestDto;
 import com.example.roomreservations.dto.ReservationDto;
+import com.example.roomreservations.exception.GuestNotFoundException;
 import com.example.roomreservations.mapper.ReservationMapper;
 import com.example.roomreservations.model.Guest;
 import com.example.roomreservations.model.Reservation;
@@ -26,9 +27,10 @@ public class GuestService {
     }
 
     public GuestDto findBySurname(String surname){
-        Guest guest = guestRepository.findBySurname(surname);
-
-        List<ReservationDto> reservationDtos = guest.getReservations().stream()
+        Optional<Guest> optionalGuest = guestRepository.findBySurname(surname);
+        if(optionalGuest.isPresent()){
+            Guest guest = optionalGuest.get();
+            List<ReservationDto> reservationDtos = guest.getReservations().stream()
                 .map(new Function<Reservation, ReservationDto>() {
                     @Override
                     public ReservationDto apply(Reservation reservation) {
@@ -45,8 +47,9 @@ public class GuestService {
                 guest.getPhoneNumber(),
                 reservationDtos
         );
-
-
+        } else {
+        throw new GuestNotFoundException(surname);
+        }
     }
 
 

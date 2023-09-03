@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface GuestRepository extends JpaRepository<Guest,Long> {
 
-Guest findBySurname(String surname);
+Optional<Guest> findBySurname(String surname);
 
 }

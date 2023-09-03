@@ -12,7 +12,7 @@ public class ReservationMapper {
             reservation.getPrice(),
             reservation.getPaymentMethod(),
             reservation.getPaymentStatus(),
-            reservation.getStartReseravtion(),
+            reservation.getStartReservation(),
             reservation.getEndReservation()
     );
     }
