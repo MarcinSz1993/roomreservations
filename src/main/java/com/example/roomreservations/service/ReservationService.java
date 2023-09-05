@@ -34,34 +34,14 @@ public class ReservationService {
     }
 
     public Reservation createNewReservation(Reservation reservation) throws Throwable {
+        Guest guest = getGuestFromRepo(reservation);
+        Room room = getRoomFromRepo(reservation);
+        validateReservationDates(room,reservation);
+        long days = calculateReservationDuration(reservation);
 
-        Long guestId = reservation.getGuest().getId();
-        Guest guest = guestRepository.findById(guestId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new GuestNotFoundException(guestId);
-            }
-        });
-        reservation.setGuest(guest);
-
-        Duration durationOfStaying = Duration.between(reservation.getStartReservation(), reservation.getEndReservation());
-        long days = durationOfStaying.toDays();
-
-        Long roomId = reservation.getRoom().getId();
-        Room room = roomRepository.findById(roomId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RoomException(roomId);
-            }
-        });
-        reservation.setRoom(room);
-
-        if (!isRoomAvailable(room, reservation.getStartReservation(), reservation.getEndReservation())) {
-            throw new DatesNotAvailableException();
-        } else if (reservation.getStartReservation().isAfter(reservation.getEndReservation())) {
-            throw new WrongDatesException();
-        }
         reservation.setPrice(days * room.getPricePerNight());
+        reservation.setRoom(room);
+        reservation.setGuest(guest);
 
         return reservationRepository.save(reservation);
     }
@@ -73,5 +53,41 @@ public class ReservationService {
 
         return incorrectReservation.isEmpty();
     }
+
+    private long calculateReservationDuration(Reservation reservation){
+        Duration durationOfStaying = Duration.between(reservation.getStartReservation(), reservation.getEndReservation());
+        return durationOfStaying.toDays();
+    }
+
+    private Room getRoomFromRepo(Reservation reservation) throws Throwable {
+        Long roomId = reservation.getRoom().getId();
+        return roomRepository.findById(roomId).orElseThrow(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new RoomException(roomId);
+
+            }
+        });
+    }
+
+    private Guest getGuestFromRepo(Reservation reservation) throws Throwable {
+        Long guestId = reservation.getGuest().getId();
+        return guestRepository.findById(guestId).orElseThrow(new Supplier<Throwable>() {
+            @Override
+            public Throwable get() {
+                return new GuestNotFoundException(guestId);
+            }
+        });
+    }
+
+    private void validateReservationDates(Room room, Reservation reservation){
+        if (!isRoomAvailable(room, reservation.getStartReservation(), reservation.getEndReservation())) {
+            throw new DatesNotAvailableException();
+        } else if (reservation.getStartReservation().isAfter(reservation.getEndReservation())) {
+            throw new WrongDatesException();
+        }
+    }
+
+
 
 }
