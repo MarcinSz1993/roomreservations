@@ -1,5 +1,6 @@
 package com.example.roomreservations.service;
 
+import com.example.roomreservations.exception.DatesNotAvailableException;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.ReservationRepository;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -23,20 +25,11 @@ public class RoomService {
        return roomRepository.save(room);
     }
 
-//    public List<Room> showAvailableRooms(){
-//        return roomRepository.findAll().stream()
-//                .filter(new Predicate<Room>() {
-//                    @Override
-//                    public boolean test(Room room) {
-//                        return room.isAvailable();
-//                    }
-//                })
-//                .toList();
-//    }
+
 
     public List<Room> showAvailableRooms(LocalDateTime startDate, LocalDateTime endDate){
-        List<Reservation> foundReservations = reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate);
-        return foundReservations.stream()
+        List<Room> mappedOccupiedRooms = reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
+                .stream()
                 .map(new Function<Reservation, Room>() {
                     @Override
                     public Room apply(Reservation reservation) {
@@ -44,7 +37,16 @@ public class RoomService {
                     }
                 })
                 .toList();
-        //dfhfghfhf
 
-    };
+
+        return roomRepository.findAll().stream()
+                .filter(new Predicate<Room>() {
+                    @Override
+                    public boolean test(Room room) {
+                        return !mappedOccupiedRooms.contains(room);
+                    }
+                })
+                .toList();
+
+    }
 }

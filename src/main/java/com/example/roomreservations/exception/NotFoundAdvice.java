@@ -26,5 +26,11 @@ public String DatesNotAvailableHandler(DatesNotAvailableException ex){
 public String WrongDatesHandler(WrongDatesException ex){
     return ex.getMessage();
 }
+@ResponseBody
+@ExceptionHandler
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public String RoomExceptionHandler(RoomException ex){
+    return ex.getMessage();
+}
 
 }

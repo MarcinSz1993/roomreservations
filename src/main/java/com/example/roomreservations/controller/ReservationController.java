@@ -20,7 +20,7 @@ public class ReservationController {
     }
 
     @PostMapping("/new")
-    public Reservation createNewReservation(@RequestBody Reservation reservation){
+    public Reservation createNewReservation(@RequestBody Reservation reservation) throws Throwable {
         return reservationService.createNewReservation(reservation);
     }
 }
