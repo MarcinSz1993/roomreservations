@@ -34,7 +34,6 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn (name = "guest_id")
-
     private Guest guest;
 
 

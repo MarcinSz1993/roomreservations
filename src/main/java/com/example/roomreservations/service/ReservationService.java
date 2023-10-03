@@ -43,6 +43,10 @@ public class ReservationService {
         reservation.setRoom(room);
         reservation.setGuest(guest);
 
+        if(reservation.getStartReservation().isAfter(reservation.getEndReservation())){
+            throw new WrongDatesException();
+        }
+
         return reservationRepository.save(reservation);
     }
 
@@ -87,7 +91,6 @@ public class ReservationService {
             throw new WrongDatesException();
         }
     }
-
 
 
 }
