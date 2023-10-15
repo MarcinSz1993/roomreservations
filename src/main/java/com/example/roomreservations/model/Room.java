@@ -25,13 +25,20 @@ public class Room {
     private double pricePerNight;
     @Column(name = "capacity")
     private int capacity;
-    @Column(name = "Available")
+    @Column(name = "available")
     private boolean isAvailable;
+    @Column(name = "has_hair_dryer")
+    private boolean hasHairDryer;
+    @Column(name = "has_sauna")
+    private boolean hasSauna;
+    @Column(name = "has_private_bathroom")
+    private boolean hasPrivateBathroom;
+    @Column(name = "has_air_conditioning")
+    private boolean hasAirConditioning;
+    @Column(name = "has_balcony")
+    private boolean hasBalcony;
 
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reservation> reservations;
 
 
 }

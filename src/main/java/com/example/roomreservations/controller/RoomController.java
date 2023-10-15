@@ -22,4 +22,21 @@ public class RoomController {
     public List<Room> showAvailableRooms(@RequestParam LocalDateTime startDate, LocalDateTime endDate){
         return roomService.showAvailableRooms(startDate,endDate);
     }
+    @GetMapping("/filtered")
+    public List<Room> showAvailableAndFilteredRooms(@RequestParam LocalDateTime startDate, LocalDateTime endDate,
+                                                    int capacity,
+                                                    boolean hairDryer,
+                                                    boolean sauna,
+                                                    boolean privateBathroom,
+                                                    boolean airConditioning,
+                                                    boolean balcony){
+
+        return roomService.showAvailableFilteredRooms(startDate, endDate,
+                capacity,
+                hairDryer,
+                sauna,
+                privateBathroom,
+                airConditioning,
+                balcony);
+    }
 }

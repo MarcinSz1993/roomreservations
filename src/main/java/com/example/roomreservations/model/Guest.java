@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity(name = "guest")
@@ -24,13 +24,13 @@ public class Guest {
     @Column(name = "surname")
     private String surname;
     @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private LocalDateTime dateOfBirth;
     @Column(name = "email_address")
     private String email;
-    @Column(name = "phoneNumber")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reservation> reservations;
 

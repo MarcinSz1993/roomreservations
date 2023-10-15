@@ -25,25 +25,47 @@ public class RoomService {
        return roomRepository.save(room);
     }
 
-
-
     public List<Room> showAvailableRooms(LocalDateTime startDate, LocalDateTime endDate){
-        List<Room> mappedOccupiedRooms = reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
-                .stream()
-                .map(new Function<Reservation, Room>() {
-                    @Override
-                    public Room apply(Reservation reservation) {
-                        return reservation.getRoom();
-                    }
-                })
-                .toList();
-
-
+        List<Room> mappedOccupiedRooms = getOccupiedRooms(startDate, endDate);
         return roomRepository.findAll().stream()
                 .filter(new Predicate<Room>() {
                     @Override
                     public boolean test(Room room) {
                         return !mappedOccupiedRooms.contains(room);
+                    }
+                })
+                .toList();
+    }
+    public List<Room> showAvailableFilteredRooms(LocalDateTime startDate, LocalDateTime endDate,
+                                                 int capacity,
+                                                 boolean hairDryer,
+                                                 boolean sauna,
+                                                 boolean privateBathroom,
+                                                 boolean airConditioning,
+                                                 boolean balcony){
+        List<Room> rooms = showAvailableRooms(startDate, endDate);
+               return rooms
+                        .stream()
+                        .filter(new Predicate<Room>() {
+                    @Override
+                    public boolean test(Room room) {
+                        return room.getCapacity() == capacity &&
+                                room.isHasHairDryer() == hairDryer &&
+                                room.isHasSauna() == sauna &&
+                                room.isHasPrivateBathroom() == privateBathroom &&
+                                room.isHasAirConditioning() == airConditioning &&
+                                room.isHasBalcony() == balcony;
+                    }
+                })
+                .toList();
+    }
+    private List<Room> getOccupiedRooms(LocalDateTime startDate, LocalDateTime endDate) {
+        return reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
+                .stream()
+                .map(new Function<Reservation, Room>() {
+                    @Override
+                    public Room apply(Reservation reservation) {
+                        return reservation.getRoom();
                     }
                 })
                 .toList();

@@ -10,14 +10,12 @@ import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.GuestRepository;
 import com.example.roomreservations.repository.ReservationRepository;
 import com.example.roomreservations.repository.RoomRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service
@@ -33,11 +31,14 @@ public class ReservationService {
         return  reservationRepository.findAll();
     }
 
-    public Reservation createNewReservation(Reservation reservation) throws Throwable {
+    public Reservation createReservation(Reservation reservation) throws Throwable {
         Guest guest = getGuestFromRepo(reservation);
         Room room = getRoomFromRepo(reservation);
         validateReservationDates(room,reservation);
         long days = calculateReservationDuration(reservation);
+        if(days < 1){
+            days = 1;
+        }
 
         reservation.setPrice(days * room.getPricePerNight());
         reservation.setRoom(room);
