@@ -7,14 +7,12 @@ import com.example.roomreservations.mapper.ReservationMapper;
 import com.example.roomreservations.model.Guest;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.repository.GuestRepository;
-import com.example.roomreservations.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

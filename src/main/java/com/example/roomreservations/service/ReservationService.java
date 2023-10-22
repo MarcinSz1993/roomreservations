@@ -47,6 +47,11 @@ public class ReservationService {
         reservation.setPrice(days * room.getPricePerNight());
         reservation.setRoom(room);
         reservation.setGuest(guest);
+
+        if(reservation.getStartReservation().isAfter(reservation.getEndReservation())){
+            throw new WrongDatesException();
+        }
+      
         return reservationRepository.save(reservation);
     }
 
