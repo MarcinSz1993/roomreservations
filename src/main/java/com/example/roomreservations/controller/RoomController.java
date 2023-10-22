@@ -5,6 +5,7 @@ import com.example.roomreservations.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,11 +20,11 @@ public class RoomController {
         return roomService.addRoom(room);
     }
     @GetMapping("/available")
-    public List<Room> showAvailableRooms(@RequestParam LocalDateTime startDate, LocalDateTime endDate){
+    public List<Room> showAvailableRooms(@RequestParam LocalDate startDate, LocalDate endDate){
         return roomService.showAvailableRooms(startDate,endDate);
     }
     @GetMapping("/filtered")
-    public List<Room> showAvailableAndFilteredRooms(@RequestParam LocalDateTime startDate, LocalDateTime endDate,
+    public List<Room> showAvailableAndFilteredRooms(@RequestParam LocalDate startDate, LocalDate endDate,
                                                     int capacity,
                                                     boolean hairDryer,
                                                     boolean sauna,

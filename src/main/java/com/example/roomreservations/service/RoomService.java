@@ -8,6 +8,7 @@ import com.example.roomreservations.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
@@ -25,7 +26,7 @@ public class RoomService {
        return roomRepository.save(room);
     }
 
-    public List<Room> showAvailableRooms(LocalDateTime startDate, LocalDateTime endDate){
+    public List<Room> showAvailableRooms(LocalDate startDate, LocalDate endDate){
         List<Room> mappedOccupiedRooms = getOccupiedRooms(startDate, endDate);
         return roomRepository.findAll().stream()
                 .filter(new Predicate<Room>() {
@@ -36,7 +37,7 @@ public class RoomService {
                 })
                 .toList();
     }
-    public List<Room> showAvailableFilteredRooms(LocalDateTime startDate, LocalDateTime endDate,
+    public List<Room> showAvailableFilteredRooms(LocalDate startDate, LocalDate endDate,
                                                  int capacity,
                                                  boolean hairDryer,
                                                  boolean sauna,
@@ -59,7 +60,7 @@ public class RoomService {
                 })
                 .toList();
     }
-    private List<Room> getOccupiedRooms(LocalDateTime startDate, LocalDateTime endDate) {
+    private List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
                 .stream()
                 .map(new Function<Reservation, Room>() {

@@ -14,13 +14,13 @@ public class GuestDto {
     private Long id;
     private String name;
     private String surname;
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
     @JsonIgnore
     private String email;
     private String phoneNumber;
     private List<ReservationDto> reservations;
 
-    public GuestDto(Long id, String name, String surname, LocalDateTime dateOfBirth, String email, String phoneNumber, List<ReservationDto> reservations) {
+    public GuestDto(Long id, String name, String surname, LocalDate dateOfBirth, String email, String phoneNumber, List<ReservationDto> reservations) {
         this.id = id;
         this.name = name;
         this.surname = surname;

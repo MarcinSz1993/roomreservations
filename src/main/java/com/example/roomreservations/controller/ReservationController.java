@@ -23,4 +23,8 @@ public class ReservationController {
     public Reservation createNewReservation(@RequestBody Reservation reservation) throws Throwable {
         return reservationService.createReservation(reservation);
     }
+    @DeleteMapping("{reservationId}")
+    public void deleteReservation(@PathVariable Long reservationId){
+        reservationService.deleteReservation(reservationId);
+    }
 }

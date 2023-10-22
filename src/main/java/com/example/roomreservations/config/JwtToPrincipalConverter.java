@@ -1,5 +1,6 @@
 package com.example.roomreservations.config;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class JwtToPrincipalConverter {
                 .build();
     }
     private List<SimpleGrantedAuthority> extractAuthoritiesFromClaim(DecodedJWT jwt){
-        var claim = jwt.getClaim("role");
+        Claim claim = jwt.getClaim("role");
         if(claim.isNull() || claim.isMissing()) return List.of();
         return claim.asList(SimpleGrantedAuthority.class);
     }

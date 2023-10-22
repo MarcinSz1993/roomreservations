@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -31,23 +33,24 @@ public class ReservationService {
         return  reservationRepository.findAll();
     }
 
+    public void deleteReservation(Long id){
+        reservationRepository.deleteById(id);
+    }
+
+
+
     public Reservation createReservation(Reservation reservation) throws Throwable {
         Guest guest = getGuestFromRepo(reservation);
         Room room = getRoomFromRepo(reservation);
         validateReservationDates(room,reservation);
         long days = calculateReservationDuration(reservation);
-        if(days < 1){
-            days = 1;
-        }
-
         reservation.setPrice(days * room.getPricePerNight());
         reservation.setRoom(room);
         reservation.setGuest(guest);
-
         return reservationRepository.save(reservation);
     }
 
-    public boolean isRoomAvailable(Room room, LocalDateTime startDate, LocalDateTime endDate) {
+    public boolean isRoomAvailable(Room room, LocalDate startDate, LocalDate endDate) {
         List<Reservation> incorrectReservation = reservationRepository
                 .findByRoomAndStartReservationLessThanEqualAndEndReservationGreaterThanEqual(
                         room, endDate, startDate);
@@ -56,8 +59,8 @@ public class ReservationService {
     }
 
     private long calculateReservationDuration(Reservation reservation){
-        Duration durationOfStaying = Duration.between(reservation.getStartReservation(), reservation.getEndReservation());
-        return durationOfStaying.toDays();
+        Period durationOfStaying = Period.between(reservation.getStartReservation(),reservation.getEndReservation());
+        return durationOfStaying.getDays();
     }
 
     private Room getRoomFromRepo(Reservation reservation) throws Throwable {
@@ -88,7 +91,4 @@ public class ReservationService {
             throw new WrongDatesException();
         }
     }
-
-
-
 }

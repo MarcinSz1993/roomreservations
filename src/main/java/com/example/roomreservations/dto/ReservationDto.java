@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 @Getter
@@ -14,7 +15,7 @@ public class ReservationDto {
     private double price;
     private String paymentMethod;
     private String paymentStatus;
-    private LocalDateTime startReservation;
-    private LocalDateTime endReservation;
+    private LocalDate startReservation;
+    private LocalDate endReservation;
 
 }

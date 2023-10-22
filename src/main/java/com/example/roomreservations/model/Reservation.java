@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity(name = "reservation")
 @Getter
@@ -26,9 +26,9 @@ public class Reservation {
     @Column(name = "payment_status")
     private String paymentStatus;
     @Column(name = "start_reservation")
-    private LocalDateTime startReservation;
+    private LocalDate startReservation;
     @Column(name = "end_reservation")
-    private LocalDateTime endReservation;
+    private LocalDate endReservation;
 
     @ManyToOne
     @JoinColumn (name = "guest_id")
