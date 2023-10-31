@@ -13,9 +13,7 @@ import com.example.roomreservations.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.function.Supplier;
@@ -47,6 +45,9 @@ public class ReservationService {
         reservation.setPrice(days * room.getPricePerNight());
         reservation.setRoom(room);
         reservation.setGuest(guest);
+        if(reservation.getStartReservation().isAfter(reservation.getEndReservation())){
+            throw new WrongDatesException();
+        }
         return reservationRepository.save(reservation);
     }
 

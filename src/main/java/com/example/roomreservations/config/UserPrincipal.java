@@ -10,6 +10,7 @@ import java.util.Collection;
 public class UserPrincipal implements UserDetails {
     private final Long userId;
     private final String email;
+    private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -18,7 +19,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override

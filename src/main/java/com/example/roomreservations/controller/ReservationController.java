@@ -13,7 +13,6 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-
     @GetMapping("/all")
     public List<Reservation> showAllReservations(){
         return reservationService.showAllReservations();
