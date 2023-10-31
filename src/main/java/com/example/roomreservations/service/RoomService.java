@@ -1,6 +1,7 @@
 package com.example.roomreservations.service;
 
 import com.example.roomreservations.exception.DatesNotAvailableException;
+import com.example.roomreservations.exception.WrongDatesException;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.ReservationRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,7 +25,7 @@ public class RoomService {
     private final ReservationRepository reservationRepository;
 
     public Room addRoom(Room room) {
-       return roomRepository.save(room);
+        return roomRepository.save(room);
     }
 
     public List<Room> showAvailableRooms(LocalDate startDate, LocalDate endDate){
@@ -60,6 +62,7 @@ public class RoomService {
                 })
                 .toList();
     }
+  
     private List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
                 .stream()
@@ -69,7 +72,6 @@ public class RoomService {
                         return reservation.getRoom();
                     }
                 })
-                .toList();
-
+          .toList();
     }
 }
