@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+        database:
+                image: postgres
+                volumes:
+                        - postgres_data:/var/lib/postgresql/data
+                environment:
+                        POSTGRES_USER: postgres
+                        POSTGRES_DB: Reservation
+                        POSTGRES_PASSWORD: qwerty
+
+        docker_app:
+                image: marcinsz1993/room_reservation_app:v13.0
+                environment:
+                        SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/Reservation
+                        SPRING_DATASOURCE_USERNAME: postgres
+                        SPRING_DATASOURCE_PASSWORD: qwerty
+                        SPRING_LIQUIBASE_ENABLED: "true"
+                        SPRING_LIQUIBASE_CHANGELOG: db/changelog/changelog-master.xml
+                ports:
+                        - "8080:8080"
+                depends_on:
+                        - database
+                volumes:
+                        - ./src/main/resources/db/changelog:/db/changelog/
+
+volumes:
+        postgres_data:

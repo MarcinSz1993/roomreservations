@@ -34,5 +34,4 @@ public class Guest {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reservation> reservations;
-
 }

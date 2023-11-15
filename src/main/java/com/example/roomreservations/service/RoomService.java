@@ -1,7 +1,5 @@
 package com.example.roomreservations.service;
 
-import com.example.roomreservations.exception.DatesNotAvailableException;
-import com.example.roomreservations.exception.WrongDatesException;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.ReservationRepository;
@@ -10,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
