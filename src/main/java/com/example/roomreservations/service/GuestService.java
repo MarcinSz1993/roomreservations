@@ -17,7 +17,9 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class GuestService {
+
     private final GuestRepository guestRepository;
+
     private final ReservationMapper reservationMapper;
 
     public Guest registerGuest(Guest guest) {
@@ -29,12 +31,7 @@ public class GuestService {
         if(optionalGuest.isPresent()){
             Guest guest = optionalGuest.get();
             List<ReservationDto> reservationDtos = guest.getReservations().stream()
-                .map(new Function<Reservation, ReservationDto>() {
-                    @Override
-                    public ReservationDto apply(Reservation reservation) {
-                        return reservationMapper.reservationToReservationDto(reservation);
-                    }
-                })
+                .map(reservationMapper::reservationToReservationDto)
                 .toList();
         return new GuestDto(
                 guest.getId(),

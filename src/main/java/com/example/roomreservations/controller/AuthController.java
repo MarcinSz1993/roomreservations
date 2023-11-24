@@ -23,6 +23,7 @@ import java.util.List;
 @CrossOrigin
 public class AuthController {
     private final JwtIssuer jwtIssuer;
+
     private final AuthenticationManager authenticationManager;
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody @Validated LoginRequest loginRequest) {

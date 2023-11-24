@@ -11,6 +11,7 @@ import com.example.roomreservations.repository.GuestRepository;
 import com.example.roomreservations.repository.ReservationRepository;
 import com.example.roomreservations.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,7 +37,6 @@ public class ReservationService {
     }
 
 
-
     public Reservation createReservation(Reservation reservation) throws Throwable {
         Guest guest = getGuestFromRepo(reservation);
         Room room = getRoomFromRepo(reservation);
@@ -60,29 +60,18 @@ public class ReservationService {
     }
 
     private long calculateReservationDuration(Reservation reservation){
-        Period durationOfStaying = Period.between(reservation.getStartReservation(),reservation.getEndReservation());
-        return durationOfStaying.getDays();
+        return Period.between(reservation.getStartReservation(),
+                reservation.getEndReservation()).getDays();
     }
 
     private Room getRoomFromRepo(Reservation reservation) throws Throwable {
         Long roomId = reservation.getRoom().getId();
-        return roomRepository.findById(roomId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RoomException(roomId);
-
-            }
-        });
+        return roomRepository.findById(roomId).orElseThrow((Supplier<Throwable>) () -> new RoomException(roomId));
     }
 
     private Guest getGuestFromRepo(Reservation reservation) throws Throwable {
         Long guestId = reservation.getGuest().getId();
-        return guestRepository.findById(guestId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new GuestNotFoundException(guestId);
-            }
-        });
+        return guestRepository.findById(guestId).orElseThrow((Supplier<Throwable>) () -> new GuestNotFoundException(guestId));
     }
 
     private void validateReservationDates(Room room, Reservation reservation){

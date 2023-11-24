@@ -17,17 +17,23 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Guest {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "name")
     private String name;
+
     @Column(name = "surname")
     private String surname;
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
     @Column(name = "email_address")
     private String email;
+
     @Column(name = "phone_number")
     private String phoneNumber;
 

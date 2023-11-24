@@ -16,7 +16,7 @@ import java.util.List;
 public class RoomController {
     private final RoomService roomService;
 
-    @PostMapping("/new")
+    @PostMapping("/")
     public Room addRoom(@RequestBody Room room){
         return roomService.addRoom(room);
     }
@@ -25,20 +25,12 @@ public class RoomController {
         return roomService.showAvailableRooms(startDate,endDate);
     }
     @GetMapping("/filtered")
-    public List<Room> showAvailableAndFilteredRooms(@RequestParam LocalDate startDate, LocalDate endDate,
-                                                    int capacity,
-                                                    boolean hairDryer,
-                                                    boolean sauna,
-                                                    boolean privateBathroom,
-                                                    boolean airConditioning,
-                                                    boolean balcony){
+    public List<Room> showAvailableAndFilteredRooms(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate,
+                                                    @RequestParam int capacity,
+                                                    @RequestParam List<String> facilities){
 
         return roomService.showAvailableFilteredRooms(startDate, endDate,
-                capacity,
-                hairDryer,
-                sauna,
-                privateBathroom,
-                airConditioning,
-                balcony);
+                capacity,facilities
+                );
     }
 }
