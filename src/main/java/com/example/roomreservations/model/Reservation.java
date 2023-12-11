@@ -19,14 +19,19 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "price")
     private double price;
+
     @Column(name = "payment_method")
     private String paymentMethod;
+
     @Column(name = "payment_status")
     private String paymentStatus;
+
     @Column(name = "start_reservation")
     private LocalDate startReservation;
+
     @Column(name = "end_reservation")
     private LocalDate endReservation;
 

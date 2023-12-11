@@ -1,22 +1,26 @@
 package com.example.roomreservations.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "userentity")
-public class UserEntity {
+@Entity(name = "users")
+public class Users {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "id")
     private Long id;
-    @Column(name = "user_email")
+
+    @Column(name = "email")
     private String email;
-    @Column(name = "user_password")
+
+    @Column(name = "password")
     private String password;
-    @Column(name = "user_role")
+
+    @Column(name = "role")
     private String role;
 }

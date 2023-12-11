@@ -1,5 +1,6 @@
 package com.example.roomreservations.config;
 
+import com.example.roomreservations.model.Users;
 import com.example.roomreservations.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +17,7 @@ public class CustomUserDetailService implements UserDetailsService {
     private final UserService userService;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userService.findByEmail(username);
+        Users user = userService.findByEmail(username);
         return UserPrincipal.builder()
                 .userId(user.getId())
                 .email(user.getEmail())

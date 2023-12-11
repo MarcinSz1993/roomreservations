@@ -11,6 +11,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/guest")
 @RequiredArgsConstructor
+@CrossOrigin
 public class GuestController {
 
     private final GuestService guestService;
