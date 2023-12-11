@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+        bankservice_database:
+                image: postgres
+                volumes:
+                        - bankservice_postgres_data:/var/lib/postgresql/data
+                environment:
+                        POSTGRES_USER: postgres
+                        POSTGRES_DB: BankService
+                        POSTGRES_PASSWORD: qwerty
+        roomreservation_database:
+                image: postgres
+                volumes:
+                        - roomreservations_postgres_data:/var/lib/postgresql/data
+                environment:
+                        POSTGRES_USER: postgres
+                        POSTGRES_DB: Reservation
+                        POSTGRES_PASSWORD: qwerty
+
+        bankservice:
+                image: marcinsz1993/bankservice_app:v1.0
+                environment:
+                        SPRING_DATASOURCE_URL: jdbc:postgresql://bankservice_database:5432/BankService
+                        SPRING_DATASOURCE_USERNAME: postgres
+                        SPRING_DATASOURCE_PASSWORD: qwerty
+                        SPRING_LIQUIBASE_ENABLED: "true"
+                        SPRING_LIQUIBASE_CHANGELOG: db/changelog/changelog-master.xml
+                ports:
+                        - "9090:9090"
+                depends_on:
+                        - bankservice_database
+                volumes:
+                        - ./src/main/resources/db/changelog:/db/changelog/
+        roomreservation:
+                image: marcinsz1993/room_reservation_app:v14.0
+                environment:
+                        SPRING_DATASOURCE_URL: jdbc:postgresql://roomreservation_database:5432/Reservation
+                        SPRING_DATASOURCE_USERNAME: postgres
+                        SPRING_DATASOURCE_PASSWORD: qwerty
+                        SPRING_LIQUIBASE_ENABLED: "true"
+                        SPRING_LIQUIBASE_CHANGELOG: db/changelog/changelog-master.xml
+                ports:
+                        - "8080:8080"
+                depends_on:
+                        - roomreservation_database
+                volumes:
+                        - ./src/main/resources/db/changelog:/db/changelog/
+
+volumes:
+        roomreservations_postgres_data:
+        bankservice_postgres_data:
