@@ -42,7 +42,7 @@ public class RoomService {
                 .toList();
     }
 
-    private List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
+    public List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
                 .stream()
                 .map(Reservation::getRoom)

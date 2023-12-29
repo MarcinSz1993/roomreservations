@@ -58,11 +58,13 @@ public class TransactionService {
     }
 
     private void executeTransaction(DataForTransferRequest dataForTransferRequest) {
-        webClient.post().uri("http://roomreservations-bankservice-1:9090/transactions/roomreservationtransaction")
+        webClient.post().uri("http://localhost:9090/transactions/roomreservationtransaction")
                 .bodyValue(dataForTransferRequest)
                 .retrieve()
                 .toBodilessEntity()
                 .block();
+
+        //"http://roomreservations-bankservice-1:9090/transactions/roomreservationtransaction"
     }
 
     private static DataForTransferRequest createDataForTransferRequest(String accountNumber, double amount, String transactionType) {

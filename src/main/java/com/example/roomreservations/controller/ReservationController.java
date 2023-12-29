@@ -2,6 +2,7 @@ package com.example.roomreservations.controller;
 
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.service.ReservationService;
+import com.example.roomreservations.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+
+    private final TransactionService transactionService;
     @GetMapping("/all")
     public List<Reservation> showAllReservations(){
         return reservationService.showAllReservations();
@@ -24,8 +27,9 @@ public class ReservationController {
         return reservationService.createReservation(reservation);
     }
     @DeleteMapping("{reservationId}")
-    public void deleteReservation(@PathVariable Long reservationId){
-        reservationService.deleteReservation(reservationId);
+    public void deleteReservation(@PathVariable Long reservationId,
+                                  @RequestParam String accountNumber){
+        transactionService.deleteReservation(reservationId,accountNumber);
     }
 
 }
