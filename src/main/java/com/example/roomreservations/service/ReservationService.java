@@ -20,11 +20,11 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
+
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
     private final RoomRepository roomRepository;
-
 
 
     public List<Reservation> showAllReservations(){
@@ -59,33 +59,22 @@ public class ReservationService {
         return incorrectReservation.isEmpty();
     }
 
-    private long calculateReservationDuration(Reservation reservation){
+    public long calculateReservationDuration(Reservation reservation){
         Period durationOfStaying = Period.between(reservation.getStartReservation(),reservation.getEndReservation());
         return durationOfStaying.getDays();
     }
 
-    private Room getRoomFromRepo(Reservation reservation) throws Throwable {
+    public Room getRoomFromRepo(Reservation reservation) throws Throwable {
         Long roomId = reservation.getRoom().getId();
-        return roomRepository.findById(roomId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RoomException(roomId);
-
-            }
-        });
+        return roomRepository.findById(roomId).orElseThrow((Supplier<Throwable>) () -> new RoomException(roomId));
     }
 
-    private Guest getGuestFromRepo(Reservation reservation) throws Throwable {
+    public Guest getGuestFromRepo(Reservation reservation) throws Throwable {
         Long guestId = reservation.getGuest().getId();
-        return guestRepository.findById(guestId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new GuestNotFoundException(guestId);
-            }
-        });
+        return guestRepository.findById(guestId).orElseThrow((Supplier<Throwable>) () -> new GuestNotFoundException(guestId));
     }
 
-    private void validateReservationDates(Room room, Reservation reservation){
+    public void validateReservationDates(Room room, Reservation reservation){
         if (!isRoomAvailable(room, reservation.getStartReservation(), reservation.getEndReservation())) {
             throw new DatesNotAvailableException();
         } else if (reservation.getStartReservation().isAfter(reservation.getEndReservation())) {

@@ -1,7 +1,5 @@
 package com.example.roomreservations.service;
 
-import com.example.roomreservations.exception.DatesNotAvailableException;
-import com.example.roomreservations.exception.WrongDatesException;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.ReservationRepository;
@@ -10,12 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,47 +25,27 @@ public class RoomService {
     public List<Room> showAvailableRooms(LocalDate startDate, LocalDate endDate){
         List<Room> mappedOccupiedRooms = getOccupiedRooms(startDate, endDate);
         return roomRepository.findAll().stream()
-                .filter(new Predicate<Room>() {
-                    @Override
-                    public boolean test(Room room) {
-                        return !mappedOccupiedRooms.contains(room);
-                    }
-                })
+                .filter(room -> !mappedOccupiedRooms.contains(room))
                 .toList();
     }
     public List<Room> showAvailableFilteredRooms(LocalDate startDate, LocalDate endDate,
                                                  int capacity,
-                                                 boolean hairDryer,
-                                                 boolean sauna,
-                                                 boolean privateBathroom,
-                                                 boolean airConditioning,
-                                                 boolean balcony){
+                                                 List<String> facilities) {
         List<Room> rooms = showAvailableRooms(startDate, endDate);
-               return rooms
-                        .stream()
-                        .filter(new Predicate<Room>() {
-                    @Override
-                    public boolean test(Room room) {
-                        return room.getCapacity() == capacity &&
-                                room.isHasHairDryer() == hairDryer &&
-                                room.isHasSauna() == sauna &&
-                                room.isHasPrivateBathroom() == privateBathroom &&
-                                room.isHasAirConditioning() == airConditioning &&
-                                room.isHasBalcony() == balcony;
-                    }
+
+        return rooms.stream()
+                .filter(room -> room.getCapacity() == capacity)
+                .filter(room -> {
+                    String roomFacilities = room.getFacilities();
+                    return roomFacilities != null && Arrays.asList(roomFacilities.split(",")).containsAll(facilities);
                 })
                 .toList();
     }
-  
-    private List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
+
+    public List<Room> getOccupiedRooms(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findAllByStartReservationAndEndReservation(startDate, endDate)
                 .stream()
-                .map(new Function<Reservation, Room>() {
-                    @Override
-                    public Room apply(Reservation reservation) {
-                        return reservation.getRoom();
-                    }
-                })
+                .map(Reservation::getRoom)
           .toList();
     }
 }

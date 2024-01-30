@@ -13,7 +13,7 @@ create table guest (
 
 create table room (
                       id bigint primary key,
-                      room_number varchar(255),
+                      room_number varchar(255) unique,
                       price_per_night double precision,
                       capacity int,
                       available boolean,
