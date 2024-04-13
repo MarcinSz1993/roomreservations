@@ -1,12 +1,12 @@
 package com.example.roomreservations.controller;
 
 import com.example.roomreservations.model.Reservation;
+import com.example.roomreservations.request.ReservationRequest;
 import com.example.roomreservations.service.ReservationService;
 import com.example.roomreservations.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,10 +22,11 @@ public class ReservationController {
         return reservationService.showAllReservations();
     }
 
-    @PostMapping("/new")
-    public Reservation createNewReservation(@RequestBody Reservation reservation) throws Throwable {
-        return reservationService.createReservation(reservation);
+    @PostMapping("/")
+    public Reservation newReservation(@RequestBody ReservationRequest request) throws Throwable {
+        return reservationService.newReservation(request);
     }
+
     @DeleteMapping("{reservationId}")
     public void deleteReservation(@PathVariable Long reservationId,
                                   @RequestParam String accountNumber){

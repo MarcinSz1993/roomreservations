@@ -10,11 +10,12 @@ import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.GuestRepository;
 import com.example.roomreservations.repository.ReservationRepository;
 import com.example.roomreservations.repository.RoomRepository;
+import com.example.roomreservations.request.ReservationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -35,21 +36,25 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-
-
-    public Reservation createReservation(Reservation reservation) throws Throwable {
-        Guest guest = getGuestFromRepo(reservation);
-        Room room = getRoomFromRepo(reservation);
-        validateReservationDates(room,reservation);
-        long days = calculateReservationDuration(reservation);
+    public Reservation newReservation(ReservationRequest request) throws Throwable {
+        Reservation reservation = new Reservation();
+        Guest guest = getGuestFromRepo(request);
+        Room room = getRoomFromRepo(request);
+        validateReservationDates(room,request);
+        long days = calculateReservationDuration(request);
         reservation.setPrice(days * room.getPricePerNight());
         reservation.setRoom(room);
         reservation.setGuest(guest);
-        if(reservation.getStartReservation().isAfter(reservation.getEndReservation())){
+        reservation.setPaymentMethod(request.getPaymentMethod());
+        reservation.setPaymentStatus("W trakcie");
+        reservation.setStartReservation(request.getStartReservation());
+        reservation.setEndReservation(request.getEndReservation());
+        if(request.getStartReservation().isAfter(request.getEndReservation())){
             throw new WrongDatesException();
         }
         return reservationRepository.save(reservation);
     }
+
 
     public boolean isRoomAvailable(Room room, LocalDate startDate, LocalDate endDate) {
         List<Reservation> incorrectReservation = reservationRepository
@@ -59,25 +64,27 @@ public class ReservationService {
         return incorrectReservation.isEmpty();
     }
 
-    public long calculateReservationDuration(Reservation reservation){
-        Period durationOfStaying = Period.between(reservation.getStartReservation(),reservation.getEndReservation());
-        return durationOfStaying.getDays();
+
+    public long calculateReservationDuration(ReservationRequest request){
+        return ChronoUnit.DAYS.between(request.getStartReservation(), request.getEndReservation());
     }
 
-    public Room getRoomFromRepo(Reservation reservation) throws Throwable {
-        Long roomId = reservation.getRoom().getId();
+
+    public Room getRoomFromRepo(ReservationRequest request) throws Throwable {
+        Long roomId = request.getRoomId();
         return roomRepository.findById(roomId).orElseThrow((Supplier<Throwable>) () -> new RoomException(roomId));
     }
 
-    public Guest getGuestFromRepo(Reservation reservation) throws Throwable {
-        Long guestId = reservation.getGuest().getId();
+
+    public Guest getGuestFromRepo(ReservationRequest request) throws Throwable {
+        Long guestId = request.getGuestId();
         return guestRepository.findById(guestId).orElseThrow((Supplier<Throwable>) () -> new GuestNotFoundException(guestId));
     }
 
-    public void validateReservationDates(Room room, Reservation reservation){
-        if (!isRoomAvailable(room, reservation.getStartReservation(), reservation.getEndReservation())) {
+    public void validateReservationDates(Room room, ReservationRequest request){
+        if (!isRoomAvailable(room, request.getStartReservation(), request.getEndReservation())) {
             throw new DatesNotAvailableException();
-        } else if (reservation.getStartReservation().isAfter(reservation.getEndReservation())) {
+        } else if (request.getStartReservation().isAfter(request.getEndReservation())) {
             throw new WrongDatesException();
         }
     }

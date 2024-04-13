@@ -1,6 +1,5 @@
 package com.example.roomreservations;
 
-import com.example.roomreservations.exception.DatesNotAvailableException;
 import com.example.roomreservations.exception.GuestNotFoundException;
 import com.example.roomreservations.exception.RoomException;
 import com.example.roomreservations.exception.WrongDatesException;
@@ -10,6 +9,7 @@ import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.GuestRepository;
 import com.example.roomreservations.repository.ReservationRepository;
 import com.example.roomreservations.repository.RoomRepository;
+import com.example.roomreservations.request.ReservationRequest;
 import com.example.roomreservations.service.ReservationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,13 +75,12 @@ public class ReservationServiceTest {
     @Test
     public void calculateReservationDurationTest(){
 
-        LocalDate startDate = LocalDate.of(2023,12,20);
-        LocalDate endDate = LocalDate.of(2023,12,25);
-        Reservation reservation = new Reservation(1L,750,"Gotówka","Opłacono",startDate,endDate,null,null);
+        LocalDate startDate = LocalDate.of(2023,1,23);
+        LocalDate endDate = LocalDate.of(2023,2,28);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,startDate,endDate,"Gotówka");
 
-        long expectedDays = 5;
-
-        long actualDays = reservationService.calculateReservationDuration(reservation);
+        long expectedDays = 36;
+        long actualDays = reservationService.calculateReservationDuration(reservationRequest);
 
         Assertions.assertEquals(expectedDays,actualDays);
     }
@@ -92,11 +90,11 @@ public class ReservationServiceTest {
         LocalDate startDate = LocalDate.of(2023,12,20);
         LocalDate endDate = LocalDate.of(2023,12,25);
         Room expectedRoom = new Room(1L,"10",200,2,true,"internet,tv");
-        Reservation reservation = new Reservation(1L,750,"Gotówka","Opłacono",startDate,endDate,null,expectedRoom);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,startDate,endDate,"Gotówka");
 
-        when(roomRepository.findById(reservation.getId())).thenReturn(Optional.of(expectedRoom));
+        when(roomRepository.findById(reservationRequest.getRoomId())).thenReturn(Optional.of(expectedRoom));
 
-        Room actualRoom = reservationService.getRoomFromRepo(reservation);
+        Room actualRoom = reservationService.getRoomFromRepo(reservationRequest);
 
         Assertions.assertEquals(expectedRoom.getId(),actualRoom.getId());
         Assertions.assertEquals(expectedRoom.getRoomNumber(),actualRoom.getRoomNumber());
@@ -111,22 +109,22 @@ public class ReservationServiceTest {
         LocalDate startDate = LocalDate.of(2023,12,20);
         LocalDate endDate = LocalDate.of(2023,12,25);
         Room expectedRoom = new Room(1L,"10",200,2,true,"internet,tv");
-        Reservation reservation = new Reservation(1L,750,"Gotówka","Opłacono",startDate,endDate,null,expectedRoom);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,startDate,endDate,"Gotówka");
 
-        when(roomRepository.findById(reservation.getId())).thenReturn(Optional.empty());
+        when(roomRepository.findById(reservationRequest.getRoomId())).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(RoomException.class,() -> reservationService.getRoomFromRepo(reservation));
+        Assertions.assertThrows(RoomException.class,() -> reservationService.getRoomFromRepo(reservationRequest));
     }
     @Test
     public void getGuestFromRepoTestWhenGuestExists() throws Throwable {
         LocalDate startDate = LocalDate.of(2023,12,20);
         LocalDate endDate = LocalDate.of(2023,12,25);
         Guest expectedGuest = new Guest(1L,"Jan","Nowak",LocalDate.of(1980,1,1),"jan@nowak.pl","123456",Collections.emptyList());
-        Reservation reservation = new Reservation(1L,750,"Gotówka","Opłacono",startDate,endDate,expectedGuest,null);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,startDate,endDate,"Gotówka");
 
-        when(guestRepository.findById(reservation.getId())).thenReturn(Optional.of(expectedGuest));
+        when(guestRepository.findById(reservationRequest.getGuestId())).thenReturn(Optional.of(expectedGuest));
 
-        Guest actualGuest = reservationService.getGuestFromRepo(reservation);
+        Guest actualGuest = reservationService.getGuestFromRepo(reservationRequest);
 
         Assertions.assertEquals(expectedGuest.getId(),actualGuest.getId());
         Assertions.assertEquals(expectedGuest.getName(),actualGuest.getName());
@@ -142,39 +140,23 @@ public class ReservationServiceTest {
         LocalDate startDate = LocalDate.of(2023, 12, 20);
         LocalDate endDate = LocalDate.of(2023, 12, 25);
         Guest expectedGuest = new Guest(1L, "Jan", "Nowak", LocalDate.of(1980, 1, 1), "jan@nowak.pl", "123456", Collections.emptyList());
-        Reservation reservation = new Reservation(1L, 750, "Gotówka", "Opłacono", startDate, endDate, expectedGuest, null);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,startDate,endDate,"Gotówka");
 
 
-        when(guestRepository.findById(reservation.getId())).thenReturn(Optional.empty());
+        when(guestRepository.findById(reservationRequest.getGuestId())).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(GuestNotFoundException.class, () -> reservationService.getGuestFromRepo(reservation));
+        Assertions.assertThrows(GuestNotFoundException.class, () -> reservationService.getGuestFromRepo(reservationRequest));
     }
     @Test
     public void validateReservationDatesTestWhenStartDateIsAfterEndDate(){
         Room room = new Room(1L,"10",200,2,true,"internet,tv");
 
-        Reservation reservation = new Reservation(1L, 750, "Gotówka", "Opłacono", LocalDate.of(2023,12,25), LocalDate.of(2023,12,20), null, room);
+        ReservationRequest reservationRequest = new ReservationRequest(1L,750L,LocalDate.of(2023,12,25),LocalDate.of(2023,12,20),"Gotówka");
 
-        Assertions.assertThrows(WrongDatesException.class,()->reservationService.validateReservationDates(room,reservation));
+
+        Assertions.assertThrows(WrongDatesException.class,()->reservationService.validateReservationDates(room,reservationRequest));
 
 
     }
-
-    /*@Test
-    public void createReservationTest() throws Throwable {
-
-        Room room = new Room(1L,"10",200,2,true,"internet,tv");
-
-        Guest guest = new Guest(1L, "Jan", "Nowak", LocalDate.of(1980, 1, 1), "jan@nowak.pl", "123456", Collections.emptyList());
-
-        Reservation reservation = new Reservation(1L, 1000, "Gotówka", "Opłacono", LocalDate.of(2023,12,20), LocalDate.of(2023,12,25), guest, room);
-
-        when(reservationRepository.save(any(Reservation.class))).thenReturn(new Reservation());
-
-        Reservation actualReservation = reservationService.createReservation(reservation);
-
-        Assertions.assertEquals(reservation.getPrice(),actualReservation.getPrice());
-    }*/
-
 
 }
