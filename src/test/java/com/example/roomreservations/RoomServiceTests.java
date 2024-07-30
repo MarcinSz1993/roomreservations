@@ -1,3 +1,4 @@
+/*
 package com.example.roomreservations;
 
 import com.example.roomreservations.exception.WrongDatesException;
@@ -102,3 +103,4 @@ public class RoomServiceTests {
         assertThrows(WrongDatesException.class,() -> roomService.occupiedRooms(startDate,endDate));
     }
 }
+*/

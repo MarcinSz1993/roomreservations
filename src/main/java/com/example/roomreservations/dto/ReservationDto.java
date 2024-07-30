@@ -1,21 +1,23 @@
 package com.example.roomreservations.dto;
 
+import com.example.roomreservations.model.PaymentMethod;
+import com.example.roomreservations.model.PaymentStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 public class ReservationDto {
     private Long id;
+    private String reservedRoom;
     private double price;
-    private String paymentMethod;
-    private String paymentStatus;
+    private PaymentMethod paymentMethod;
+    private PaymentStatus paymentStatus;
     private LocalDate startReservation;
     private LocalDate endReservation;
-
 }

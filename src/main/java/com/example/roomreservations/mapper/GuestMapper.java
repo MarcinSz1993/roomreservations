@@ -1,40 +1,39 @@
 package com.example.roomreservations.mapper;
 
 import com.example.roomreservations.dto.GuestDto;
-import com.example.roomreservations.dto.ReservationDto;
 import com.example.roomreservations.model.Guest;
-import com.example.roomreservations.model.Reservation;
+import com.example.roomreservations.model.Role;
+import com.example.roomreservations.request.CreateGuestRequest;
 
-import java.util.List;
-import java.util.function.Function;
+import java.util.Collections;
 
 public class GuestMapper {
-    public GuestDto guestToGuestDto (Guest guest) {
-        List<ReservationDto> reservationDtos = guest.getReservations().stream()
-                .map(new Function<Reservation, ReservationDto>() {
 
-                    @Override
-                    public ReservationDto apply(Reservation reservation) {
-                        return new ReservationDto(
-                                reservation.getId(),
-                                reservation.getPrice(),
-                                reservation.getPaymentMethod(),
-                                reservation.getPaymentStatus(),
-                                reservation.getStartReservation(),
-                                reservation.getEndReservation());
-
-                    }
-                })
-                .toList();
-        return new GuestDto(
-                guest.getId(),
-                guest.getName(),
-                guest.getSurname(),
-                guest.getDateOfBirth(),
-                guest.getEmail(),
-                guest.getPhoneNumber(),
-                reservationDtos
-
-        );
+    public static Guest mapCreateGuestRequestToGuest(CreateGuestRequest createGuestRequest) {
+        return Guest.builder()
+                .id(createGuestRequest.getId())
+                .name(createGuestRequest.getName())
+                .surname(createGuestRequest.getSurname())
+                .dateOfBirth(createGuestRequest.getBirthDate())
+                .email(createGuestRequest.getEmail())
+                .password(createGuestRequest.getPassword())
+                .phoneNumber(createGuestRequest.getPhoneNumber())
+                .role(Role.USER)
+                .reservations(Collections.emptyList())
+                .build();
     }
+
+    public static GuestDto mapGuestToGuestDto(Guest guest) {
+        return GuestDto.builder()
+                .id(guest.getId())
+                .name(guest.getName())
+                .surname(guest.getSurname())
+                .dateOfBirth(guest.getDateOfBirth())
+                .email(guest.getEmail())
+                .phoneNumber(guest.getPhoneNumber())
+                .reservations(Collections.emptyList())
+                .build();
+    }
+
+
 }

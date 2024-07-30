@@ -1,22 +1,25 @@
 package com.example.roomreservations.service;
 
+import com.example.roomreservations.config.JwtService;
+import com.example.roomreservations.dto.ReservationDto;
 import com.example.roomreservations.exception.DatesNotAvailableException;
 import com.example.roomreservations.exception.GuestNotFoundException;
 import com.example.roomreservations.exception.RoomException;
 import com.example.roomreservations.exception.WrongDatesException;
+import com.example.roomreservations.mapper.ReservationMapper;
 import com.example.roomreservations.model.Guest;
 import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.model.Room;
 import com.example.roomreservations.repository.GuestRepository;
 import com.example.roomreservations.repository.ReservationRepository;
 import com.example.roomreservations.repository.RoomRepository;
+import com.example.roomreservations.request.MakeReservationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
     private final RoomRepository roomRepository;
-
-
+    private final JwtService jwtService;
 
     public List<Reservation> showAllReservations(){
         return  reservationRepository.findAll();
@@ -37,21 +39,36 @@ public class ReservationService {
 
 
 
-    public Reservation createReservation(Reservation reservation) throws Throwable {
-        Guest guest = getGuestFromRepo(reservation);
-        Room room = getRoomFromRepo(reservation);
-        validateReservationDates(room,reservation);
-        long days = calculateReservationDuration(reservation);
-        reservation.setPrice(days * room.getPricePerNight());
-        reservation.setRoom(room);
-        reservation.setGuest(guest);
-        if(reservation.getStartReservation().isAfter(reservation.getEndReservation())){
+    public ReservationDto createReservation(MakeReservationRequest makeReservationRequest,String token) {
+        if(makeReservationRequest.getStartReservation().isAfter(makeReservationRequest.getEndReservation())){
             throw new WrongDatesException();
         }
-        return reservationRepository.save(reservation);
+        String guestEmail = jwtService.extractGuestEmail(token);
+        Guest guest = guestRepository.findByEmail(guestEmail).orElseThrow(() -> new GuestNotFoundException(guestEmail));
+        Room room = roomRepository.findByRoomNumber(makeReservationRequest.getRoomNumber()).orElseThrow(() -> new RoomException(makeReservationRequest.getId()));
+        ReservationDto reservationDto = ReservationMapper.mapMakeReservationRequestToReservationDto(makeReservationRequest);
+
+        validateReservationDates(makeReservationRequest.getRoomNumber(),makeReservationRequest.getStartReservation(),makeReservationRequest.getEndReservation());
+        long days = calculateReservationDuration(makeReservationRequest.getStartReservation(),makeReservationRequest.getEndReservation());
+        reservationDto.setPrice(days * room.getPricePerNight());
+        reservationDto.setReservedRoom(makeReservationRequest.getRoomNumber());
+
+        Reservation reservation = Reservation.builder()
+                .price(reservationDto.getPrice())
+                .paymentMethod(reservationDto.getPaymentMethod())
+                .paymentStatus(reservationDto.getPaymentStatus())
+                .startReservation(makeReservationRequest.getStartReservation())
+                .endReservation(makeReservationRequest.getEndReservation())
+                .guest(guest)
+                .room(room)
+                .build();
+        reservationRepository.save(reservation);
+        reservationDto.setId(reservation.getId());
+        return reservationDto;
     }
 
-    public boolean isRoomAvailable(Room room, LocalDate startDate, LocalDate endDate) {
+    public boolean isRoomAvailable(String roomNumber, LocalDate startDate, LocalDate endDate) {
+        Room room = roomRepository.findByRoomNumber(roomNumber).orElseThrow(() -> new RoomException(Long.decode(roomNumber)));
         List<Reservation> incorrectReservation = reservationRepository
                 .findByRoomAndStartReservationLessThanEqualAndEndReservationGreaterThanEqual(
                         room, endDate, startDate);
@@ -59,36 +76,15 @@ public class ReservationService {
         return incorrectReservation.isEmpty();
     }
 
-    private long calculateReservationDuration(Reservation reservation){
-        Period durationOfStaying = Period.between(reservation.getStartReservation(),reservation.getEndReservation());
+    private long calculateReservationDuration(LocalDate startReservation, LocalDate endReservation){
+        Period durationOfStaying = Period.between(startReservation,endReservation);
         return durationOfStaying.getDays();
     }
 
-    private Room getRoomFromRepo(Reservation reservation) throws Throwable {
-        Long roomId = reservation.getRoom().getId();
-        return roomRepository.findById(roomId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new RoomException(roomId);
-
-            }
-        });
-    }
-
-    private Guest getGuestFromRepo(Reservation reservation) throws Throwable {
-        Long guestId = reservation.getGuest().getId();
-        return guestRepository.findById(guestId).orElseThrow(new Supplier<Throwable>() {
-            @Override
-            public Throwable get() {
-                return new GuestNotFoundException(guestId);
-            }
-        });
-    }
-
-    private void validateReservationDates(Room room, Reservation reservation){
-        if (!isRoomAvailable(room, reservation.getStartReservation(), reservation.getEndReservation())) {
+    private void validateReservationDates(String roomNumber, LocalDate startReservation, LocalDate endReservation){
+        if (!isRoomAvailable(roomNumber, startReservation, endReservation)) {
             throw new DatesNotAvailableException();
-        } else if (reservation.getStartReservation().isAfter(reservation.getEndReservation())) {
+        } else if (startReservation.isAfter(endReservation)) {
             throw new WrongDatesException();
         }
     }

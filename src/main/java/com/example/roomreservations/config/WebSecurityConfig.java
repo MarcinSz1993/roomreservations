@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,40 +19,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomUserDetailService customUserDetailService;
+    private final UserDetailsServiceImp userDetailsServiceImp;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http
-                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
-                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+        return http
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())
-                .securityMatcher("/**")
+                .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/guests/").permitAll()
+                        .requestMatchers("/guests/login").permitAll()
                         .requestMatchers("/reservation/all").hasRole("ADMIN")
                         .requestMatchers("/reservation/{reservationId}").hasRole("ADMIN")
-                        .requestMatchers("/room/new").hasRole("ADMIN")
-                        .requestMatchers("/guest/surname").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                );
-        return http.build();
+                        .requestMatchers("/rooms/").hasRole("ADMIN")
+                        .requestMatchers("/guest/surname").hasRole("USER")
+                        .requestMatchers("/rooms/available").authenticated()
+                        .anyRequest().authenticated())
+                .userDetailsService(userDetailsServiceImp)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
-
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(customUserDetailService)
-                .passwordEncoder(passwordEncoder())
-                .and().build();
-
-
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 }

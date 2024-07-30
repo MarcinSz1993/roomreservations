@@ -6,16 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/room")
+@RequestMapping("/rooms")
 public class RoomController {
     private final RoomService roomService;
 
-    @PostMapping("/new")
+    @PostMapping("/")
     public Room addRoom(@RequestBody Room room){
         return roomService.addRoom(room);
     }
