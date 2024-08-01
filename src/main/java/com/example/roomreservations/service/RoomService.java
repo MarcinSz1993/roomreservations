@@ -28,21 +28,16 @@ public class RoomService {
                 .toList();
     }
     public List<Room> showAvailableFilteredRooms(LocalDate startDate, LocalDate endDate,
-                                                 int capacity,
-                                                 boolean hairDryer,
-                                                 boolean sauna,
-                                                 boolean privateBathroom,
-                                                 boolean airConditioning,
-                                                 boolean balcony){
+                                                 Integer capacity,
+                                                 Boolean hairDryer,
+                                                 Boolean sauna,
+                                                 Boolean privateBathroom,
+                                                 Boolean airConditioning,
+                                                 Boolean balcony){
         List<Room> rooms = showAvailableRooms(startDate, endDate);
                return rooms
                         .stream()
-                        .filter(room -> room.getCapacity() == capacity &&
-                                room.isHasHairDryer() == hairDryer &&
-                                room.isHasSauna() == sauna &&
-                                room.isHasPrivateBathroom() == privateBathroom &&
-                                room.isHasAirConditioning() == airConditioning &&
-                                room.isHasBalcony() == balcony)
+                        .filter(room -> filterRoomFacilities(room, capacity, hairDryer, sauna, privateBathroom, airConditioning, balcony))
                 .toList();
     }
   
@@ -51,5 +46,17 @@ public class RoomService {
                 .stream()
                 .map(Reservation::getRoom)
           .toList();
+    }
+
+    private boolean filterRoomFacilities(Room room, Integer capacity,Boolean hairDryer,
+                                         Boolean sauna, Boolean privateBathroom,
+                                         Boolean airConditioning, Boolean balcony) {
+
+        return (capacity == null || room.getCapacity() == capacity) &&
+                (hairDryer == null || room.isHasHairDryer() == hairDryer) &&
+                (sauna == null || room.isHasSauna() == sauna) &&
+                (privateBathroom == null || room.isHasPrivateBathroom() == privateBathroom) &&
+                (airConditioning == null || room.isHasAirConditioning() == airConditioning) &&
+                (balcony == null || room.isHasBalcony() == balcony);
     }
 }

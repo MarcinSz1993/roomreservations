@@ -18,7 +18,7 @@ public class Room {
     private String roomNumber;
     private double pricePerNight;
     private int capacity;
-    private boolean isAvailable;
+    private boolean available;
     private boolean hasHairDryer;
     private boolean hasSauna;
     private boolean hasPrivateBathroom;

@@ -29,15 +29,16 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final JwtService jwtService;
 
-    public List<Reservation> showAllReservations(){
-        return  reservationRepository.findAll();
+    public List<ReservationDto> showAllReservations(){
+        List<Reservation> allReservations = reservationRepository.findAll();
+        return allReservations.stream()
+                .map(ReservationMapper::mapReservationToReservationDto)
+                .toList();
     }
 
     public void deleteReservation(Long id){
         reservationRepository.deleteById(id);
     }
-
-
 
     public ReservationDto createReservation(MakeReservationRequest makeReservationRequest,String token) {
         if(makeReservationRequest.getStartReservation().isAfter(makeReservationRequest.getEndReservation())){
@@ -64,6 +65,8 @@ public class ReservationService {
                 .build();
         reservationRepository.save(reservation);
         reservationDto.setId(reservation.getId());
+        reservationDto.setGuestSurname(reservation.getGuest().getSurname());
+        reservationDto.setGuestEmail(reservation.getGuest().getEmail());
         return reservationDto;
     }
 

@@ -18,7 +18,7 @@ public class GuestMapper {
                 .email(createGuestRequest.getEmail())
                 .password(createGuestRequest.getPassword())
                 .phoneNumber(createGuestRequest.getPhoneNumber())
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .reservations(Collections.emptyList())
                 .build();
     }
@@ -31,7 +31,10 @@ public class GuestMapper {
                 .dateOfBirth(guest.getDateOfBirth())
                 .email(guest.getEmail())
                 .phoneNumber(guest.getPhoneNumber())
-                .reservations(Collections.emptyList())
+                .reservations(guest.getReservations()
+                        .stream()
+                        .map(ReservationMapper::mapReservationToReservationDto)
+                        .toList())
                 .build();
     }
 

@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReservationDto {
     private Long id;
+    private String guestSurname;
+    private String guestEmail;
     private String reservedRoom;
     private double price;
     private PaymentMethod paymentMethod;

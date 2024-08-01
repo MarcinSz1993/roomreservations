@@ -12,6 +12,9 @@ public class ReservationMapper {
     public static ReservationDto mapReservationToReservationDto (Reservation reservation){
         return ReservationDto.builder()
                 .id(reservation.getId())
+                .guestSurname(reservation.getGuest().getSurname())
+                .guestEmail(reservation.getGuest().getEmail())
+                .reservedRoom(reservation.getRoom().getRoomNumber())
                 .price(reservation.getPrice())
                 .paymentMethod(reservation.getPaymentMethod())
                 .paymentStatus(reservation.getPaymentStatus())

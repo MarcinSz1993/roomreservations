@@ -1,10 +1,10 @@
 package com.example.roomreservations.controller;
 
 import com.example.roomreservations.dto.ReservationDto;
-import com.example.roomreservations.model.Reservation;
 import com.example.roomreservations.request.MakeReservationRequest;
 import com.example.roomreservations.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    @GetMapping("/")
-    public List<Reservation> showAllReservations(){
+    @GetMapping("/all")
+    public List<ReservationDto> showAllReservations(){
         return reservationService.showAllReservations();
     }
 
@@ -26,8 +26,9 @@ public class ReservationController {
         return reservationService.createReservation(makeReservationRequest,token);
     }
     @DeleteMapping("{reservationId}")
-    public void deleteReservation(@PathVariable Long reservationId){
+    public ResponseEntity<String> deleteReservation(@PathVariable Long reservationId){
         reservationService.deleteReservation(reservationId);
+        return ResponseEntity.ok("You deleted reservation with id " + reservationId);
     }
 
 }

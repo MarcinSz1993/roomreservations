@@ -31,8 +31,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("/guests/").permitAll()
                         .requestMatchers("/guests/login").permitAll()
-                        .requestMatchers("/reservation/all").hasRole("ADMIN")
-                        .requestMatchers("/reservation/{reservationId}").hasRole("ADMIN")
+                        .requestMatchers("/reservations/all").hasRole("ADMIN")
+                        .requestMatchers("/reservations/{reservationId}").hasRole("ADMIN")
                         .requestMatchers("/rooms/").hasRole("ADMIN")
                         .requestMatchers("/guest/surname").hasRole("USER")
                         .requestMatchers("/rooms/available").authenticated()

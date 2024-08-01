@@ -1,17 +1,326 @@
-<h1>This is a backend project which simulate a platform to manage reservations and everything what need to do it like create rooms, reservations, register guests, add, search, edit and remove these things.
-In the project I used Java, Spring Boot, Maven, Postgresql.<br><br></h1>
+## This is a backend project which simulate a platform to manage reservations like create rooms, reservations, register guests, add, search, edit and remove these things.
+### In the project I used Java, Spring Boot, Postgresql.<br><br>
 
-<h2>Basic operations in this app:</h2><br>
+### Basic operations in this app:
 
-<h3>1.If you want to log in, you need to type correct credentials(login and password) and then a token is generated. The token allows you to enter secured endpoints.<br></h3>
-<a href="https://ibb.co/Z12c0SM"><img src="https://i.ibb.co/CsPVf6H/roomreservation.png" alt="roomreservation" border="0"></a><br><br>
+First you need to register your account. To do it go to below endpoint:
+```http request
+http://localhost:8080/guests/
+```
 
-<h3>2.To register a guest you need to type required info about the guest. As a response a new object of Guest will be created and saved to database.<br></h3>
-<a href="https://ibb.co/47hR74x"><img src="https://i.ibb.co/6mj0mD5/roomreservation.png" alt="roomreservation" border="0"></a><br><br>
+and fill required fields in:
+```json
+{
+  "name":"Katarzyna",
+  "surname":"Kowalska",
+  "birthDate":"1997-08-13",
+  "email":"kkowalska@example.pl",
+  "password":"qwerty",
+  "phoneNumber":"12345678"
+}
+```
+When your request is correct you should get a response:
+```json
+{
+    "id": 1,
+    "name": "Katarzyna",
+    "surname": "Kowalska",
+    "dateOfBirth": "1997-08-13",
+    "email": "kkowalska@example.pl",
+    "phoneNumber": "12345678",
+    "reservations": []
+}
+```
 
-<h3>3.If you want to create a new reservation for a guest is necessary to type id of guest, id of room, paymentMethod, start and end of the reservation. A total price is included in resposne and will be calculated automatically. In the case when you give not existing guest or room then a special exception will be thrown. The same will happen when room will be not available or you give wrong dates.<br> </h3>
-<a href="https://ibb.co/synwcHh"><img src="https://i.ibb.co/t8gsnXS/roomreservation.png" alt="roomreservation" border="0"></a><br>
-<a href="https://ibb.co/n8CFxgH"><img src="https://i.ibb.co/Z1m0qLn/roomreservation.png" alt="roomreservation" border="0"></a> <br><br>
+When you are registered then you can log in with endpoint:
+```http request
+http://localhost:8080/guests/login
+```
+and typing email and password in the request:
+```json
+{
+    "email":"kkowalska@example.pl",
+    "password":"qwerty"
+}
+```
+When everything is fine with logging in, you should see a token in the response:
+```json
+{
+    "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJra293YWxza2FAZXhhbXBsZS5wbCIsImlhdCI6MTcyMjM1NjEwMCwiZXhwIjoxNzIyNTI4OTAwfQ.4b1Uv3cj7ExHVNSxS8jxgRPxQFD1CEAcTrbHRKrUXnkoBRzBq2NkYLr1l5pkLQUS"
+}
+```
 
-<h3>4.To find available room in date you prefer you must type dates you want and you will see a list of available rooms.A response also contains info about every room like price per night,capacity and facilities etc...</h3><br>
-<a href="https://ibb.co/85hdF79"><img src="https://i.ibb.co/C7rMxHQ/roomreservation.png" alt="roomreservation" border="0"></a>
+From now on, you can make a new reservation. However, before doing so, you have the option to check the availability of rooms on specific dates. This option allows you to select your preferred dates and view all available rooms along with their specific facilities.
+```http request
+http://localhost:8080/rooms/available
+This endpoint requires 2 parameters:
+startDate
+endDate
+
+Example:
+http://localhost:8080/rooms/available?startDate=2024-08-30&endDate=2024-09-05
+```
+As the response you get list of rooms:
+```json
+[
+    {
+        "id": 1,
+        "roomNumber": "1",
+        "pricePerNight": 100.0,
+        "capacity": 1,
+        "hasHairDryer": false,
+        "hasSauna": false,
+        "hasPrivateBathroom": false,
+        "hasAirConditioning": false,
+        "hasBalcony": false,
+        "available": true
+    },
+    {
+        "id": 2,
+        "roomNumber": "2",
+        "pricePerNight": 200.0,
+        "capacity": 2,
+        "hasHairDryer": false,
+        "hasSauna": false,
+        "hasPrivateBathroom": false,
+        "hasAirConditioning": false,
+        "hasBalcony": false,
+        "available": true
+    },
+    {
+        "id": 3,
+        "roomNumber": "3",
+        "pricePerNight": 300.0,
+        "capacity": 2,
+        "hasHairDryer": true,
+        "hasSauna": false,
+        "hasPrivateBathroom": true,
+        "hasAirConditioning": true,
+        "hasBalcony": true,
+        "available": true
+    },
+    {
+        "id": 4,
+        "roomNumber": "4",
+        "pricePerNight": 500.0,
+        "capacity": 3,
+        "hasHairDryer": true,
+        "hasSauna": true,
+        "hasPrivateBathroom": true,
+        "hasAirConditioning": true,
+        "hasBalcony": false,
+        "available": true
+    },
+    {
+        "id": 5,
+        "roomNumber": "5",
+        "pricePerNight": 400.0,
+        "capacity": 2,
+        "hasHairDryer": true,
+        "hasSauna": true,
+        "hasPrivateBathroom": true,
+        "hasAirConditioning": true,
+        "hasBalcony": true,
+        "available": true
+    }
+]
+```
+There is an additional useful method for selecting a room.
+You can specify exactly what type of room you are looking for.
+To do this, use the following endpoint:
+```http request
+http://localhost:8080/rooms/filtered
+The endpoint requires 2 mandatory parameters:
+startDate
+endDate
+Below you find optional parameters. Those parameters will help you to find the room you want:
+capacity
+hairDryer
+sauna       
+privateBathroom
+airConditioning
+balcony
+```
+Example request when you are interested in room for 2 persons included sauna, private bathroom and balcony looks like this:
+```http request
+http://localhost:8080/rooms/filtered?startDate=2024-08-10&endDate=2024-08-15&capacity=2&privateBathroom=true&balcony=true
+```
+As a response you will receive a list of rooms which meet your criteria:
+```json
+[
+  {
+    "id": 3,
+    "roomNumber": "3",
+    "pricePerNight": 300.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": false,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  },
+  {
+    "id": 5,
+    "roomNumber": "5",
+    "pricePerNight": 400.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": true,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  },
+  {
+    "id": 7,
+    "roomNumber": "7",
+    "pricePerNight": 450.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": true,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  },
+  {
+    "id": 10,
+    "roomNumber": "10",
+    "pricePerNight": 600.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": true,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  },
+  {
+    "id": 15,
+    "roomNumber": "15",
+    "pricePerNight": 280.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": false,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  },
+  {
+    "id": 23,
+    "roomNumber": "23",
+    "pricePerNight": 190.0,
+    "capacity": 2,
+    "available": true,
+    "hasHairDryer": false,
+    "hasSauna": false,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+  }
+]
+```
+If you want to make a reservation go to endpoint:
+```http request
+http://localhost:8080/reservations/
+```
+and select number of room, dates and payment method in a request:
+```json
+{
+    "roomNumber":"18",
+    "startReservation":"2024-08-30",
+    "endReservation":"2024-09-05",
+    "paymentMethod":"CARD"
+}
+```
+A response will be:
+```json
+{
+    "id": 1,
+    "reservedRoom": "18",
+    "price": 1830.0,
+    "paymentMethod": "CARD",
+    "paymentStatus": "NOT_PAID",
+    "startReservation": "2024-08-30",
+    "endReservation": "2024-09-05"
+}
+```
+As an admin you have more options to manage the application.
+You can view list of all reservations in your system under this endpoint:
+```http request
+http://localhost:8080/reservations/all
+```
+You will receive list of ReservationDto:
+```json
+[
+    {
+        "id": 1,
+        "guestSurname": "Kowalska",
+        "guestEmail": "kkowalska@example.pl",
+        "reservedRoom": "18",
+        "price": 1830.0,
+        "paymentMethod": "CARD",
+        "paymentStatus": "NOT_PAID",
+        "startReservation": "2024-08-30",
+        "endReservation": "2024-09-05"
+    },
+    {
+        "id": 2,
+        "guestSurname": "Doe",
+        "guestEmail": "johnny@example.pl",
+        "reservedRoom": "26",
+        "price": 300.0,
+        "paymentMethod": "CASH",
+        "paymentStatus": "NOT_PAID",
+        "startReservation": "2024-10-20",
+        "endReservation": "2024-10-23"
+    }
+]
+```
+You can also find a guest by surname using this endpoint:
+```http request
+http://localhost:8080/guests/surname
+mandatory param is named 'surname'
+Example:
+http://localhost:8080/guests/surname?surname=Kowalska
+```
+In a response you will get info about guest and his reservations:
+```json
+{
+    "id": 2,
+    "name": "Katarzyna",
+    "surname": "Kowalska",
+    "dateOfBirth": "1997-08-13",
+    "email": "kkowalska@example.pl",
+    "phoneNumber": "12345678",
+    "reservations": [
+        {
+            "id": 1,
+            "guestSurname": "Kowalska",
+            "guestEmail": "kkowalska@example.pl",
+            "reservedRoom": "18",
+            "price": 1830.0,
+            "paymentMethod": "CARD",
+            "paymentStatus": "NOT_PAID",
+            "startReservation": "2024-08-30",
+            "endReservation": "2024-09-05"
+        }
+    ]
+}
+```
+
+As the admin you can cancel any reservation as well:
+```http request
+http://localhost:8080/reservations/{reservationId}
+```
+Example:
+```http request
+http://localhost:8080/reservations/2
+```
+In the confirmation of deleting the reservation you get a statement:
+```json
+"You deleted reservation with id 2"
+```
+
