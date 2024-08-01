@@ -324,3 +324,36 @@ In the confirmation of deleting the reservation you get a statement:
 "You deleted reservation with id 2"
 ```
 
+If you want to add room, hit the endpoint:
+```http request
+http://localhost:8080/rooms/
+```
+Example request:
+```json
+{
+    "roomNumber":"31",
+    "pricePerNight":190,
+    "capacity":3,
+    "available":true,
+    "hasHairDryer":true,
+    "hasSauna":true,
+    "hasPrivateBathroom":true,
+    "hasAirConditioning":true,
+    "hasBalcony":true
+}
+```
+Example response:
+```json
+{
+    "id": 52,
+    "roomNumber": "31",
+    "pricePerNight": 190.0,
+    "capacity": 3,
+    "available": true,
+    "hasHairDryer": true,
+    "hasSauna": true,
+    "hasPrivateBathroom": true,
+    "hasAirConditioning": true,
+    "hasBalcony": true
+}
+```
